@@ -33,11 +33,16 @@
 - https://wiki.seeedstudio.com/cn/lerobot_so100m_new/  矽递科技lerobot教程
 ### 2.常用命令
 - 查找相机：
+```bash
 lerobot-find-cameras
+```bash
 - 串口权限使能：
+```bash
 sudo chmod 666 /dev/ttyACM*
+```bash
 - 固定相机路径（保持 USB 口位不变）：
 防止相机连接不稳定编号乱跳，可考虑固定住。（注意相机连线尽量插在电脑端的两个不同USB接口上）
+```bash
 前视：{your_path}
 侧视：{your_path}
 - 使用双相机遥操作
