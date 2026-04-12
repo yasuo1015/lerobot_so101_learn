@@ -37,6 +37,18 @@ lerobot-find-cameras
 - 串口权限使能：
 sudo chmod 666 /dev/ttyACM*
 - 固定相机路径（保持 USB 口位不变）：
--- 防止相机连接不稳定编号乱跳，可考虑固定住。（注意相机连线尽量插在电脑端的两个不同USB接口上）
--- 前视：{your_path}
--- 侧视：{your_path}
+防止相机连接不稳定编号乱跳，可考虑固定住。（注意相机连线尽量插在电脑端的两个不同USB接口上）
+前视：{your_path}
+侧视：{your_path}
+- 使用双相机遥操作
+lerobot-teleoperate \
+    --robot.type=so101_follower \
+    --robot.port=/dev/ttyACM0 \
+    --robot.id={your foller name}\
+    --robot.cameras='{ front: {type: opencv, index_or_path: "your_path", width: 640, height: 480, fps: 30, fourcc: "MJPG"}, side: {type: opencv, index_or_path: "your_path", width: 640, height: 480, fps: 30, fourcc: "MJPG"} }' \
+    --teleop.type=so101_leader \
+    --teleop.port=/dev/ttyACM1 \
+    --teleop.id={your leader name} \
+    --display_data=true
+- 数据采集
+
