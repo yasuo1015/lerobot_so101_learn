@@ -29,14 +29,14 @@
 ## 快速开始
 ### 1.环境安装及基础配置
 具体操作详见
-https://zihao-ai.feishu.cn/wiki/TS6swApHbinx01kHDi5cf5n5n8c 同济子豪兄lerobot教程
-https://wiki.seeedstudio.com/cn/lerobot_so100m_new/  矽递科技lerobot教程
+- https://zihao-ai.feishu.cn/wiki/TS6swApHbinx01kHDi5cf5n5n8c 同济子豪兄lerobot教程
+- https://wiki.seeedstudio.com/cn/lerobot_so100m_new/  矽递科技lerobot教程
 ### 2.常用命令
-查找相机：
+- 查找相机：
 lerobot-find-cameras
-串口权限使能：
+- 串口权限使能：
 sudo chmod 666 /dev/ttyACM*
-固定相机路径（保持 USB 口位不变）：
+- 固定相机路径（保持 USB 口位不变）：
 防止相机连接不稳定编号乱跳，可考虑固定住。（注意相机连线尽量插在电脑端的两个不同USB接口上）
 前视：{your_path}
 侧视：{your_path}
