@@ -41,6 +41,7 @@ sudo chmod 666 /dev/ttyACM*
 前视：{your_path}
 侧视：{your_path}
 - 使用双相机遥操作
+```bash
 lerobot-teleoperate \
     --robot.type=so101_follower \
     --robot.port=/dev/ttyACM0 \
