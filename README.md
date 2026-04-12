@@ -18,22 +18,14 @@
 
 - 记录 LeRobot 真机部署过程中的问题、思考与解决方法。
 - 面向想快速上手 `LeRobot + SO101` 的同学，提供尽量简洁的实操流程。
-- 重点总结 `ACT`、`Diffusion`、`SmolVLA`、`Pi0` 四类策略在真机复现中的踩坑经验。
-
-### 内容重点
-
-- 数据采集、训练、推理、评估的基础流程
-- 真机部署中的常见问题
-- 不同策略在实际任务中的表现差异
-- 参数调整思路与问题排查方法
+- 重点总结 `ACT`、`Diffusion`、`SmolVLA`、`Pi0` 四类策略在真机复现中遇到的问题。
 
 ## 硬件与环境
 
 ### 硬件配置
 
 - 机械臂：`SOARM101`
-- 相机：双相机，包含场景相机和手眼相机
-- 相机配置：`{type: opencv, width: 640, height: 480, fps: 30, fourcc: "MJPG"}`
+- 相机配置：双相机，包含场景相机和手眼相机。`{type: opencv, width: 640, height: 480, fps: 30, fourcc: "MJPG"}`
 - 本地电脑显卡：`RTX 4060 8G`
 
 ### 软件环境
@@ -179,4 +171,6 @@ PY
 
 - `your_local_dataset_path`：本地保存的数据集路径
 - `your_hf_username/your_dataset_name`：目标 Hugging Face 数据集仓库名
+
+
 
