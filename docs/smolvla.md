@@ -192,7 +192,7 @@ python examples/rtc/eval_with_real_robot.py \
 
 下图对应一个 `chunk` 内 RTC 相关参数的大致关系：
 
-![RTC 参数示意图](assets/rtc_chunk_params.png)
+![RTC 参数示意图](../assets/rtc_chunk_params.png)
 
 
 ### 6. 推理阶段的问题
