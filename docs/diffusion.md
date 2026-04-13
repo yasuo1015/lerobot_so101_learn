@@ -25,6 +25,8 @@ lerobot-train \
   --wandb.enable=true \
   --steps=50000 \
   --policy.horizon=32 \
+  --policy.n_action_steps=16 \
+  --policy.drop_n_last_frames=15 \
   --policy.push_to_hub=false
 ```
 
@@ -49,6 +51,11 @@ lerobot-train \
 - `--policy.horizon=32`
   - 这里给出的是一个适合真机起步验证的经验值。
   - `horizon` 太小会让动作规划窗口偏短，训练时 loss 下降可能更慢，推理时也更容易抖动。
+
+- `--policy.drop_n_last_frames=15`
+  - 末尾不进行采样的帧数。
+  - 一般通过drop_n_last_frames = horizon - n_action_steps - n_obs_steps + 1 设置
+
 
 ### 3. 训练结果保存位置
 
