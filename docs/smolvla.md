@@ -192,21 +192,8 @@ python examples/rtc/eval_with_real_robot.py \
 
 下图对应一个 `chunk` 内 RTC 相关参数的大致关系：
 
-```mermaid
-gantt
-    title RTC 参数在一个 chunk 内的对应关系
-    dateFormat X
-    axisFormat %s
+![RTC 参数示意图](assets/rtc_chunk_params.png)
 
-    section 一个 chunk
-    更早的部分（灰色） :done, earlier, 0, 15
-    real_delay（黄色） :crit, delay, 15, 8
-    rtc.execution_horizon（蓝色） :active, horizon, 23, 27
-
-    section 触发窗口
-    action_queue_size_to_get_new_actions :milestone, marker, 15, 0
-    action_queue_size_to_get_new_actions 对应区间 :aq, 15, 35
-```
 
 ### 6. 推理阶段的问题
 
