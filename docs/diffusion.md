@@ -53,7 +53,7 @@ lerobot-train \
   - `horizon` 太小会让动作规划窗口偏短，训练时 loss 下降可能更慢，推理时也更容易抖动。
 
 - `--policy.drop_n_last_frames=15`
-  - 末尾不进行采样的帧数。
+  - 末尾不进行采样的帧数，避免采样动作序列的时候因为未来动作不够长而出现大量padding，采样动作序列的值就是horizon。
   - 一般通过drop_n_last_frames = horizon - n_action_steps - n_obs_steps + 1 设置
 
 
