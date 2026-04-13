@@ -190,6 +190,24 @@ python examples/rtc/eval_with_real_robot.py \
   --fps=30
 ```
 
+下图对应一个 `chunk` 内 RTC 相关参数的大致关系：
+
+```mermaid
+gantt
+    title RTC 参数在一个 chunk 内的对应关系
+    dateFormat X
+    axisFormat %s
+
+    section 一个 chunk
+    更早的部分（灰色） :done, earlier, 0, 15
+    real_delay（黄色） :crit, delay, 15, 8
+    rtc.execution_horizon（蓝色） :active, horizon, 23, 27
+
+    section 触发窗口
+    action_queue_size_to_get_new_actions :milestone, marker, 15, 0
+    action_queue_size_to_get_new_actions 对应区间 :aq, 15, 35
+```
+
 ### 6. 推理阶段的问题
 
 #### 1. 运行过程中机械臂出现明显停顿。
@@ -198,22 +216,37 @@ python examples/rtc/eval_with_real_robot.py \
 
 #### 2. 运行过程中机械臂出现微小抖动。
 
-解决方法：适当增大rtc.execution_horizon，让预测新动作队列更多和过去动作队列结合，有利于消除抖动。
-但是注意rtc.execution_horizon的值必须小于action_queue_size_to_get_new_actions，最好小于action_queue_size_to_get_new_actions+real_delay。（real_delay是进行下一轮推理这个时间段运行的动作步数，因为推理需要时间，这个时间动作也在执行）
+解决方法：适当增大 `rtc.execution_horizon`，让预测新动作队列更多和过去动作队列结合，有利于消除抖动。
 
-可以在日志中得到real delay时间，同时还知道chunk_size，初步观察抖动可能是由于对过去的结合以及对现在的利用不平衡导致的，所以我们让新预测的序列一半结合前面的序列，一半仅依赖当前观测。
+> [!IMPORTANT]
+> 但是注意 `rtc.execution_horizon` 的值必须小于 `action_queue_size_to_get_new_actions`，最好小于 `action_queue_size_to_get_new_actions+real_delay`。  
+> `real_delay` 是进行下一轮推理这个时间段运行的动作步数，因为推理需要时间，这个时间动作也在执行。
 
-假设执行x步后开始推理，那么其实要找到这个中间点就是2x+real_delay=chunk_size。通过这个计算解出x，然后用chunk_size-x得到action_queue_size_to_get_new_actions。
+可以在日志中得到 `real_delay` 时间，同时还知道 `chunk_size`。初步观察抖动可能是由于对过去的结合以及对现在的利用不平衡导致的，所以我们让新预测的序列一半结合前面的序列，一半仅依赖当前观测。
 
-execution_horizon同理，在找到合理x后，保证rtc.execution_horizon长度等于x即可。这样只有初始的预测会多执行一些前面的序列，后面都是一半以前序列一半现在序列，有效改善了平滑性和成功可能。
+假设执行 `x` 步后开始推理，那么其实要找到这个中间点就是：
 
-因为真机验证会有一定延迟和波动，所以可以考虑把get_actions稍微增大一点，加大2-3步左右。
+```text
+2x + real_delay = chunk_size
+```
 
-经过重复真机验证发现抓取并不是保证一半结合以前序列一半使用当前序列效果更好，我的real_delay值大约为6-8步，也就是action_queue_size_to_get_new_actions应为30左右。
+通过这个计算解出 `x`，然后用：
 
-但是实机验证发现将action_queue_size_to_get_new_actions增大为40，同时也将execution_horizon增大到35会让抓取更稳定，成功率更高，也就是几乎让模型进行连续推理，同时鼓励模型更多关注过去的动作更有助于提升成功率。
+```text
+action_queue_size_to_get_new_actions = chunk_size - x
+```
 
-这一点有一些类似于ACT的实机测试。
+得到 `action_queue_size_to_get_new_actions`。
+
+`execution_horizon` 同理，在找到合理 `x` 后，保证 `rtc.execution_horizon` 长度等于 `x` 即可。这样只有初始的预测会多执行一些前面的序列，后面都是一半以前序列一半现在序列，有效改善了平滑性和成功可能。
+
+因为真机验证会有一定延迟和波动，所以可以考虑把 `get_actions` 稍微增大一点，加大 `2-3` 步左右。
+
+经过重复真机验证发现，抓取并不是保证一半结合以前序列一半使用当前序列效果更好。我的 `real_delay` 值大约为 `6-8` 步，也就是 `action_queue_size_to_get_new_actions` 应为 `30` 左右。
+
+但是实机验证发现，将 `action_queue_size_to_get_new_actions` 增大为 `40`，同时也将 `execution_horizon` 增大到 `35`，会让抓取更稳定，成功率更高，也就是几乎让模型进行连续推理，同时鼓励模型更多关注过去的动作，更有助于提升成功率。
+
+这一点有一些类似于 ACT 的实机测试。
 
 
 smolvla非常适合资源不足又想尝试部署vla的小伙伴们，4060 8G显存的笔记本完全可以做到本地部署。
