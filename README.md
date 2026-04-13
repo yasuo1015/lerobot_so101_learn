@@ -1,6 +1,6 @@
 # LeRobot + SO101 快速入门与策略复现中遇到的问题
 
-> 我的Hugging Face 主页：[your_hf_name](https://huggingface.co/ljx03)  
+> 我的Hugging Face 主页：[ljx03](https://huggingface.co/ljx03)  
 > 本项目相关数据集、模型权重会优先发布在这里。
 
 ## 目录
