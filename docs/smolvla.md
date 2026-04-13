@@ -190,7 +190,7 @@ python examples/rtc/eval_with_real_robot.py \
   --fps=30
 ```
 
-下图对应一个 `chunk` 内 RTC 相关参数的大致关系：
+下图对应一个 `chunk` 内 RTC 相关参数的大致关系，如果 `real_delay` 和 `rtc.execution_horizon` ，那么 `rtc.execution_horizon` 会放弃重合的步数，用原数值减去重合部分来衔接：
 
 ![RTC 参数示意图](../assets/rtc_chunk_params.png)
 
