@@ -89,78 +89,37 @@ your_hf_username/your_diffusion_model_name
 
 ### 5. 真机推理与评估
 
-Diffusion 训练完成后，可以使用 `lerobot-record` 挂载策略进行真机推理和评估。使用以下命令记录十轮推理结果，每轮 10s，复位时间 6s。（可根据自己实际情况修改）
+Diffusion 训练完成后，可以使用 `lerobot-record` 挂载策略进行真机推理和评估，这里是使用horizon为32进行训练的。使用以下命令记录十轮推理结果，每轮 10s，复位时间 6s。（可根据自己实际情况修改）
 
 ```bash
 lerobot-record \
-  --robot.type=so101_follower \     #从动臂
+  --robot.type=so101_follower \
   --robot.port=/dev/ttyACM0 \
-  --robot.id=<YOUR_FOLLOWER_ID> \
-  --robot.cameras='{ front: {type: opencv, index_or_path: "<YOUR_FRONT_CAMERA_PATH>", width: 640, height: 480, fps: 30, fourcc: "MJPG"}, side: {type: opencv, index_or_path: "<YOUR_SIDE_CAMERA_PATH>", width: 640, height: 480, fps: 30, fourcc: "MJPG"} }' \
+  --robot.id=<YOUR_FOLLOWER_ID> \                      #你的从动臂ID
+  --robot.cameras='{ front: {type: opencv, index_or_path: "<YOUR_FRONT_CAMERA_PATH>", width: 640, height: 480, fps: 30, fourcc: "MJPG"}, side: {type: opencv, index_or_path: "<YOUR_SIDE_CAMERA_PATH>", width: 640, height: 480, fps: 30, fourcc: "MJPG"} }' \           #相机路径
   --teleop.type=so101_leader \
   --teleop.port=/dev/ttyACM1 \
-  --teleop.id=<YOUR_LEADER_ID> \
+  --teleop.id=<YOUR_LEADER_ID> \                       #你的引导臂ID
   --display_data=true \
-  --dataset.repo_id=<YOUR_EVAL_DATASET_REPO_ID> \
-  --dataset.num_episodes=10 \
-  --dataset.single_task="<YOUR_TASK_DESCRIPTION>" \
-  --dataset.episode_time_s=10 \
-  --dataset.reset_time_s=6 \
+  --dataset.repo_id=<YOUR_EVAL_DATASET_REPO_ID> \      #你要保存的评估数据集的路径
+  --dataset.num_episodes=10 \                          #重复十轮
+  --dataset.single_task="<YOUR_TASK_DESCRIPTION>" \    #你的任务描述
+  --dataset.episode_time_s=10 \                        #每轮时间为10s
+  --dataset.reset_time_s=6 \                           #每轮回到原位时间6s
   --dataset.reset_max_relative_target=10.0 \
   --dataset.push_to_hub=false \
-  --policy.path=<YOUR_MODEL_REPO_ID> \
+  --policy.path=<YOUR_MODEL_REPO_ID> \                 #你的模型名称
   --policy.device=cuda \
-  --policy.n_action_steps=16 \
+  --policy.n_action_steps=16 \                         #一次推理后动作执行步数，不能大于预测步数
   --policy.noise_scheduler_type=DDIM \
   --policy.num_inference_steps=10
 ```
 
-如果模型还没有上传到 Hugging Face，也可以直接把 `--policy.path` 改成本地路径：
-
-```bash
-outputs/train/<YOUR_DIFFUSION_OUTPUT_DIR>/checkpoints/last/pretrained_model
-```
-
-### 6. 这些占位符需要替换
-
-- `<YOUR_DATASET_REPO_ID>`
-  - 训练数据集仓库名
-  - 例如：`your_hf_username/your_dataset_name`
-
-- `<YOUR_DIFFUSION_OUTPUT_DIR>`
-  - Diffusion 训练输出目录名
-
-- `<YOUR_DIFFUSION_JOB_NAME>`
-  - Diffusion 训练任务名
-
-- `<YOUR_MODEL_REPO_ID>`
-  - 训练完成后上传的模型仓库名
-  - 例如：`your_hf_username/your_diffusion_model_name`
-
-- `<YOUR_FOLLOWER_ID>`
-  - follower 机械臂名称
-
-- `<YOUR_FRONT_CAMERA_PATH>`
-  - 前视相机路径
-
-- `<YOUR_SIDE_CAMERA_PATH>`
-  - 侧视相机路径
-
-- `<YOUR_LEADER_ID>`
-  - leader 机械臂名称
-
-- `<YOUR_EVAL_DATASET_REPO_ID>`
-  - 推理评估时保存结果的数据集名
-
-- `<YOUR_TASK_DESCRIPTION>`
-  - 当前任务描述
-  - 建议与训练数据中的任务描述保持一致
-
-### 7. 推理阶段的问题
+### 6. 推理阶段的问题
 
 #### 1.训练 loss 下降慢，机械臂震动明显。
 
-解决方法：适当增大 `policy.horizon`。个人实验里，`horizon=32` 的表现通常会明显好于 `horizon=16`，动作窗口更长，真机控制也更平滑。
+解决方法：适当增大 `policy.horizon`。horizon值太小重复推理次数过多，机械臂抖动明显而且效果较差。个人实验里，`horizon=32` 的表现通常会明显好于 `horizon=16`，动作窗口更长，真机控制也更平滑。
 
 对应地，记得同步调整：
 
@@ -186,6 +145,8 @@ outputs/train/<YOUR_DIFFUSION_OUTPUT_DIR>/checkpoints/last/pretrained_model
 
 - `num_inference_steps` 更小
   - 推理更快，但动作可能更粗糙，抓取稳定性也可能下降。
+
+实机测试下来发现使用DDIM及10步反向推理平滑性明显增强，抓取效果变化不大。
 
 #### 3. Diffusion 虽然比 ACT 更擅长处理多模态分布，但如果数据覆盖范围不足，依然会过拟合。
 
