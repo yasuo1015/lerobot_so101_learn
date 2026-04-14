@@ -30,6 +30,19 @@ lerobot-train \
   --policy.push_to_hub=false
 ```
 
+这里默认使用的是 LeRobot 当前现成的 `--policy.type=diffusion` 实现，可以理解为默认 CNN 风格的 Diffusion Policy baseline。
+如果只是先跑通 `LeRobot + SO101` 的训练和真机推理，这一版通常更稳，也更容易复现。
+
+为了方便和 transformer 路线做直观对比，这里把两种抓取示意放在一起：
+
+#### 默认 CNN 架构抓取示意
+
+![Diffusion 默认 CNN 架构抓取效果](../assets/diffusion_cnn.gif)
+
+#### Transformer 架构抓取示意
+
+![Diffusion Transformer 架构抓取效果](../assets/diffusion_transformer.gif)
+
 ### 2. 训练参数说明
 
 - `<YOUR_DATASET_REPO_ID>`
@@ -43,6 +56,14 @@ lerobot-train \
 - `<YOUR_DIFFUSION_JOB_NAME>`
   - 当前训练任务名称。
   - 建议与输出目录保持一致。
+
+- `--policy.type=diffusion`
+  - 当前文档默认讨论的是 LeRobot 里现成的 Diffusion Policy 实现，也就是更偏 CNN 风格的时序去噪骨干。
+  - 如果从架构角度看，transformer 版并不是把 diffusion 流程整体换掉，而是把负责每一轮预测噪声的核心网络 `εθ` 从时间卷积换成 transformer。
+  - 在 transformer 版里，带噪动作序列会按时间步编码成 action tokens，扩散步信息也会编码进去，当前观测则作为条件输入注入模型，用 attention 去建模更长的时序依赖。
+  - 一般来说，默认 CNN 版更稳、更适合先做 baseline；transformer 版更适合动作变化更快、对长程时序依赖更强的任务，但通常也更吃数据和训练稳定性。
+  -  LeRobot 集成 diffusion transformer 请见：https://github.com/huggingface/lerobot/pull/2545
+
 
 - `--steps=50000`
   - 作为起步验证用的训练步数。
@@ -160,3 +181,11 @@ lerobot-record \
 解决方法：采集数据时尽量改变物体方向、摆放位置和抓取轨迹，不要让样本都集中在非常接近的位置上。
 
 因为 Diffusion 的优势在于学习“一个合理动作分布”，如果数据本身只覆盖了很窄的一小块状态空间，那么模型学到的仍然只是局部模仿，泛化不会自动变好。
+
+#### 4. 默认 CNN 架构已经能跑通，但动作还是偏平或响应不够灵活。
+
+解决方法：如果你已经确认数据质量、相机视角和基本参数都没有明显问题，可以再去考虑 transformer 路线。
+
+默认 CNN 架构更适合作为第一版 baseline，因为训练更稳，也更容易先把真机链路跑通；但如果任务动作变化更快，或者更依赖长程时序关系，transformer 架构更有机会改善动作被“抹平”的问题。
+
+同时这里默认CNN架构的down_dims 是 (512, 1024, 2048)，参数量较大，所以推理速度较慢，transformer架构的参数量明显小于这里CNN架构的模型，所以机械臂动作会更平滑。

@@ -153,3 +153,9 @@ lerobot-record \
 https://github.com/huggingface/lerobot/pull/319
 
 ACT 的优势在于训练和推理链路都相对清晰，适合作为 `LeRobot + SO101` 复现过程中的第一个基线模型。
+
+### 7. 抓取效果示意
+
+下面这个 `gif` 对应 ACT 在开启时间集成后的一个真机抓取示意，便于直观看到动作平滑性和抓取节奏：
+
+![ACT 开启时间集成后的抓取效果](../assets/act_with_time%20integration.gif)

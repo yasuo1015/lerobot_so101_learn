@@ -237,3 +237,9 @@ action_queue_size_to_get_new_actions = chunk_size - x
 
 
 smolvla非常适合资源不足又想尝试部署vla的小伙伴们，4060 8G显存的笔记本完全可以做到本地部署。
+
+### 7. 抓取效果示意
+
+下面这个 `gif` 对应 SmolVLA 的一个真机抓取示意，可以直观看到整体动作节奏和抓取过程：
+
+![SmolVLA 抓取效果](../assets/smolvla.gif)
